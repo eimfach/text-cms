@@ -1,0 +1,506 @@
+/meta
+author: Robin Gruenke
+website: https://www.robingruenke.com
+year: 2020
+title: Journal - Generate Html Tool | robingruenke.com
+description: Generate static html flexible, approachable, consistent and with a custom format
+keywords: html text python generate tool
+topic: How my Journal is build
+prop: value:withcolon
+
+/introduction
+
+For the purpose of starting my blog (I call it journal, because I will write in small chapters and it also serves as documentation),
+I want to generate static html without a server.
+I want a blend of: Clean approach, less boilerplate, simplicity, approachability, content validation,
+plain text, modularity and freedom for customizing.
+
+/chapter
+topic: TL;DR I created my own document format
+author: Robin Gruenke
+date: 23.03.2020
+picture: 250px /gallery/how-my-journal-is-build.jpeg
+appendix: [Document for this article] https://github.com/eimfach/eimfach.github.io/blob/robingruenke.com/journal/blogging/tools/how-my-journal-is-build.journal
+
+Writing my articles outside the scope of html and css rendering was important to me. I want to write plain text and decorate it with properties,
+which resemble certain reoccurring html components and meta information. So I created my own format for this. You can find a link to the document for this article
+in appendix.
+
+/chapter
+topic: Preface: What about Elm ?
+author: Robin Gruenke
+date: 07.03.2020
+appendix: [What is Elm ?] https://en.wikipedia.org/wiki/Elm_(programming_language)
+
+Because I am a big fan of Elm, my first thought was if it was a good choice for my purpose.
+I have a little bit experience with elm-static, which is an opinionated tool for creating static html for your website.
+It supports markdown and elm-markup. 
+However, in my humble opinion it is structural very complex, has a lot of boilerplate and the modularity of the markdown files is somehow hard to see through.
+
+What about elm-markup ?
+
+I saw the introduction video of it, and I think it is a very great idea. It is so modular and extensible that you can create very rich
+custom formats for your static html. I was looking for it on github, but soon I realized, it is somewhat hard to start off with it, since
+there is no real introduction and documentation for it. I would spend a lot of time understanding it and getting things done, so dropped it from the list.
+However, maybe I will have a look later this year !
+
+Finally, I was thinking: What would be the elm way of doing it ?
+
+Elm could render static html in a very simple way, by just creating a main function and call the html functions you need.
+And it would bring all the power and modularity of elm with it. However, I was quite sure that the compiler couldn't generate plain html at all.
+
+This is how it looks:
+
+code:
+  module Test exposing (..)
+  import Html exposing (Html, div, h1, text)
+
+  main : Html Never
+  main =
+      div [] [ h1 [] [ text "Hello World !" ]  ]
+:code
+
+Cool, no boilerplate at all in the first place !
+
+When you compile it, you get a html document. However, there is no static html from your main function in it.
+It just seems so natural to me that it would generate static html, since the annotation line 'main : Html Never' tells us: 
+I will render html without any Javascript Events guaranteed.
+Of course, in the end, I was expecting that. As of today, Elm can render html via its Javascript runtime only (It is a compile to js language).
+
+Maybe the addition of a built-in custom type like 'Static' could tell the compiler to just render html ? 
+It would be just so simple and straight forward :)
+
+Summary:
+
+It seems like that Elm is not the appropriate tool (for now). I could generate pages just the way I mentioned
+earlier, however, the whole page would be rendered with javascript, which is not what I want (think of SEO).
+
+/chapter
+topic: Preface: And what about PHP ?
+author: Robin Gruenke
+date: 07.03.2020
+
+Yes, good old php. It comes with modular html rendering 'included'. That is what it was made for initially.
+I had my experience with it. It is great for starting a small project from scratch and you want to proceed fast.
+Until today it grew to has compelling OOP features. Also, leveraging existing html files to be dynamic is very easy.
+However, mixing plain html and php code is scaling badly, 
+since maintaining readability is clearly not a 'built-in feature', in my opinion. 
+It can quickly turn into a complete mess.
+
+In order to get a clean and fitting environment with php, I would need to research for appropriate tools.
+But the pool of my concerns are too inconstant.
+Do I need some sort of smart classes which handle rendering ?
+How could I dismiss writing mixed php and html ?
+Do I need some sort of framework ?
+Where can I find well written documentation ?
+Can I have PHP with a nice syntax ? (Python, you ?)
+
+I am sorry, PHP.
+
+/chapter
+topic: Indeed Python !
+author: Robin Gruenke
+date: 07.03.2020
+picture: 1000px https://imgs.xkcd.com/comics/python.png
+appendix: [Documentation for Yattag] https://www.yattag.org
+
+I was learning Python the last weeks. Somehow it caught my attention after years, and I thought: why did I never give it a try ? 
+Sorry Python, that I never considered you before ! You are clearly awesome !
+
+Python just runs. It is very approachable and easy to learn.
+It has clever and unique idioms, straight forward data structures, 
+outstanding libraries for a lot of use cases and on top, a very clean syntax.
+
+It is versatile.
+
+- Do you want to compute complex math with less code ? NumPy got your back.
+
+- Do you want to create a science application ? SciPy got your back.
+
+- Do you want to create interactive code documents ? IPython and Jupyter Notebooks got your back.
+
+- Want to compute math for neural networks on your GPU ? PyTorch has your back, just to mention one.
+
+- Data Science ? Python loves it.
+
+- Web Frameworks ? Django, Flask and more.
+
+Now: What about my need of html modularity and a simple and clean approach ? I would prefer not to write html documents but still be declarative.
+I also would prefer not to use some sort of dynamic template language.
+
+Luckily, Python has my back and I found a really interesting library for my purpose: Yattag.
+
+Yattag code is just plain Python which utilizes the 'with' statement:
+
+code:
+  from yattag import Doc, indent
+
+  doc, tag, text = Doc().tagtext()
+
+  with tag('html'):
+      with tag('body', id = 'hello'):
+          with tag('h1'):
+              text('Hello world!')
+
+  print(indent(doc.getvalue()))
+:code
+
+Result:
+
+code:
+  <html>
+    <body id="hello">
+      <h1>Hello world!</h1>
+    </body>
+  </html>
+:code
+
+This way I could write my whole site in pure python.
+Clean, modular and declarative html generation there you go !
+
+/chapter
+topic: Still, I want to write my articles in plain text !
+author: Robin Gruenke
+date: 08.03.2020
+
+Okay, okay. Yes, I would still need to build rather complex and repetitive stacks of 'pythonic html' for each page. Reusability or not.
+Of course I will build up functions which resemble html components, that would be the modular part. But that is not sufficient.
+
+To recapture:
+
+I want a blend of: Clean approach, less boilerplate, simplicity, approachability, content validation, plain text, modularity and freedom for customizing.
+
+So what would be basically missing is content validation and plain text. 
+I could extend my pythonic html with validator functions, to get the validation I need, or create a validation layer between the parsing and the rendering.
+But before all that, I want to write my articles in plain text.
+
+So I finally decided to create my own document format, which resembles a Journal Page with all its specific layout and styling.
+
+I want to write a parser that parses the document,
+validates for SEO best practices and enforces semantics in content
+(like a requirement for an introduction text, max length of content elements, required meta data or keyword occurrence). The reason I want to combine
+parsing and content validation is, so that I can reuse it for another project. Content semantics would be a feature of the document format.
+
+Each Page will have the exact same structure and basic elements. Creating an abstract format,
+while letting python handle the parsing, while letting the parsing handle the content validation, 
+while letting yattag assemble the html from the parsing results, would be a nice separation of concerns. Phew !
+
+As an aside, you can see (maybe you were thinking about it already), the very known markdown format would not be enough for this.
+
+/chapter
+topic: How does the format look like ?
+author: Robin Gruenke
+date: 09.03.2020
+appendix: [View the implementation of the Parser] https://github.com/eimfach/eimfach.github.io/blob/robingruenke.com/journal.py
+
+At first I describe the meta data for the document:
+
+code:
+  /meta
+  author: Robin Gruenke
+  website: https://www.robingruenke.com
+  year: 2020
+  title: Journal - Tools | robingruenke.com
+  description: Generate static html flexible, approachable, consistent and with a custom format
+  keywords: journal generate html python elm
+  topic: How my Journal is build
+:code
+
+- Semantic blocks are annotated with a slash like /meta
+
+- The meta properties are expected in this exact order, in those exact lines, to enforce consistency across multiple pages.
+
+- author: Requires exactly two latin character words separated by a space. This author is the owner of the journal topic.
+Any following author properties are just so that multiple authors can write on a single document. Like for guest chapters.
+
+- website: The journal topic owners website
+
+- year: Requires a four digit year.
+
+- title: Requires three words with the given special characters and spaces
+
+- description: Requires exactly 50 to 160 characters
+
+- keywords: Requires exactly 5 latin words
+
+- topic: Can be any characters up to a length of 50 characters
+
+Then there is the /introduction block. It is required to have it in the document including the following plain text,
+which must be between 50 and 300 characters, not counting spaces, and it must be surrounded with two line breaks.
+
+code:
+  /introduction
+
+  For the purpose of starting my blog (I call it journal, because I will write in small chapters),
+  I want to generate static html without a server.
+  I want a blend of: Clean approach, less boilerplate, simplicity, approachability,content validation,
+  plain text, modularity and freedom for customizing.
+
+:code
+
+For every chapter there is a /chapter block. It also requires to set at least topic, author and a date. The date is in german format (dd.mm.yyyy).
+Optionally you can set a picture, which consists of two space separated values: a (css compatible)
+height value and the link itself. Then, there is the plain text for the chapter, it is just free texting, with unlimited paragraphs.
+Just separate them by two new lines. They will be wrapped in p tags later on. Plus, leading dash characters are auto magically, 
+fancily transformed into a unicode dot character.
+
+code:
+  /chapter
+  topic: Indeed Python !
+  author: Robin Gruenke
+  date: 07.03.2020
+  picture: 1000px https://imgs.xkcd.com/comics/python.png
+
+  I am a paragraph
+
+  Another paragraph
+:code
+
+And that's basically it.
+
+Ah yes, not to forget, there are these code blocks on this page which looks like this: (I had to escape them, a code block starts with code: and ends with :code)
+
+code:
+  \code:
+  <html>
+    <body id="hello">
+      <h1>Hello world!</h1>
+    </body>
+  </html>
+  \:code
+:code
+
+Code blocks may only occur in chapter blocks in between paragraphs.
+
+- Finally, a single line of at least three dashes (---) stops the parsing. It has come to an area in the document, which is just for happily and freely drafting around :)
+
+What I want to add further: 
+
+- [x] A chapter appendix with one hyperlink (use 'appendix: [description] hyperlink')
+
+- [x] One markdown style inline hyperlink at the end of an introtext. I think this should be the only place in the document for an inline hyperlink,
+because I think they are distracting from text content. This is not covered by the journal parser however. It is part of the html components.
+
+- [x] Gallery support (use 'gallery: 75px (path) (path) (path)', picture attribute is required)
+
+- [x] Quotes for chapters (use 'quote: [description] [quotetext] [hyperlink]')
+
+- [x] Checkbox support for paragraphs beginning with '- [ ]' or '- [x]'. This is also covered by the html components.
+
+- Maybe some emphasizing stuff.
+I am not too much of a fan of bold or underlined words in texts, however. I think it is distracting from the content.
+Maybe some italic stuff. I like Italy !
+
+- [x] Also, some small uncritical parser bugs have to be fixed.
+
+
+/chapter
+topic: How does the Parser output look like ?
+author: Robin Gruenke
+date: 10.03.2020
+appendix: [What is a Dictionary ?] https://en.wikibooks.org/wiki/A-level_Computing/AQA/Paper_1/Fundamentals_of_data_structures/Dictionaries
+
+The parser output is a Python Dictionary with the following keys and its value types (Key : Type) :
+
+code:
+  -- document root structure
+  author : String
+  owner-website : String
+  year : String
+  title : String
+  description : String
+  keywords : String
+  topic : String
+  introtext : String
+  chapters : List Dictionary
+:code
+
+The 'chapters' value is a List of Dictionaries, where each Dictionary resembles a /chapter block in the document.
+A chapter Dictionary has the following keys:
+
+code:
+  -- Chapter structure
+  topic : String
+  author : String
+  date : String
+  appendix : Dictionary { 'href' : String, 'description' : String }
+  picture : Dictionary { 'src' : String, 'height' : String }
+  paragraphs : List Dictionary
+:code
+
+The 'paragraphs' value is a List of Dictionaries, where each Dictionary resembles a line break separated text block in the chapter, be it just a text block or a code block.
+Therefore two properties are in a paragraph Dictionary: type and content. Type stands for text or code block, the content is just the actual text from the document.
+
+code:
+  -- Paragraph structure
+  type : String
+  content : String
+:code
+
+Here an overview of the output converted to JSON:
+
+code:
+  {
+      "author": "Robin Gruenke",
+      "owner-website": "https:\/\/www.robingruenke.com",
+      "year": "2020",
+      "title": "Journal - Tools | robingruenke.com",
+      "description": "Generate static html flexible, approachable, consistent and with a custom format",
+      "keywords": "journal generate html python elm",
+      "topic": "How my Journal is build",
+      "introtext": "For the purpose of starting my blog (I call it journal, because I will write in small chapters), I want to generate static html without a server. I want a blend of: Clean approach, less boilerplate, simplicity, approachability, content validation, plain text, modularity and freedom for customizing. ",
+      "chapters": [
+          {
+              "topic": "How does the parser output look like ?",
+              "author": "Robin Gruenke",
+              "date": "10.03.2020",
+              "paragraphs": [
+                  {
+                      "type": "text",
+                      "content": "I am a Paragraph"
+                  },
+                  {
+                      "type": "code",
+                      "content": "I am a Paragraph"
+                  }
+              ]
+          }
+      ]
+  }
+:code
+
+/chapter
+topic: A simple picture Gallery
+author: Robin Gruenke
+date: 12.03.2020
+picture: 250px https://source.unsplash.com/daily?mountain
+gallery: 75px (https://source.unsplash.com/daily?water) (https://source.unsplash.com/daily?river) (https://source.unsplash.com/daily?forest) (https://source.unsplash.com/daily?lake) (https://source.unsplash.com/daily?plant) (https://source.unsplash.com/daily?sea)
+appendix: [Pictures are from unsplash.com] https://unsplash.com
+
+I wanted to have a simple possibility to inject a Gallery into my journals. So I introduced a new attribute for chapters, 'gallery'.
+It looks like this:
+
+code:
+  gallery: 50px (/gallery/photo1.jpeg) (/gallery/photo2.jpeg) (/gallery/photo3.jpeg)
+:code
+
+- The first value is required and is a css compatible height.
+The height will apply on the thumbnails of the Gallery component. This way you can influence the thumbnail appearance.
+
+- After this you can insert as many picture paths you want, as long as they are wrapped in parenthesis. They will be shown as rows of three.
+Also, you have to specify a file type from the ones which are supported: png | jpg | jpeg.
+Generic urls are not supported as of now.
+
+- Galleries also require to set a picture attribute. It will blend together and create a gallery component.
+The height value of the picture attribute determines how large the pictures in the gallery can scale.
+
+- The client side javascript for the gallery interactivity is very minimal (It just swaps out thumbnail image and main image):
+
+code:
+  (function GalleryModule(){
+    document.querySelectorAll('.gallery-background').forEach(function(topEl){
+      var mainImage = topEl.querySelector('.main-image');
+
+      topEl.querySelectorAll('.gallery-picture').forEach(function(img){
+
+        img.onclick = function() {
+          var imgSrc = img.getAttribute('src')
+          var mainImageSrc = mainImage.getAttribute('src')
+          
+          img.setAttribute('src', mainImageSrc)
+          mainImage.setAttribute('src', imgSrc)
+        }
+      });
+
+    });
+  })();
+:code
+
+
+-------------------------------------------------------------------------------------------------------------
+
+/chapter
+topic: Creating a sidebar with related topics
+author: Robin Gruenke
+date: 25.03.2020
+
+/chapter
+topic: Markdown in my Markup ?
+author: Robin Gruenke
+date: 10.03.2020
+
+
+/chapter
+topic: The Pythonic Html
+author: Robin Gruenke
+date: 10.03.2020
+
+
+Now, how does it look like ?
+
+First, I have this page-title component: 
+
+code:
+  def pagetitle(doc, introtext, topic, author, website):
+    with doc.tag('div', klass='heading-container'):
+      with doc.tag('h1', klass='content-heading font-thin', id='pagetitle', style='margin-bottom: 5px'):
+        with doc.tag('span', klass='icon-ink-pen-streamline colorful-font'):
+          doc.text('')
+        doc.text(' ' + topic)
+      with doc.tag('p', klass='center'):
+        with doc.tag('small'):
+          doc.text(' Journal Topic of ')
+          with doc.tag('a', href=website, title=author):
+            doc.text(author)
+      intro(doc, text=introtext)
+:code
+
+
+/chapter
+topic: Backlog
+author: Robin Gruenke
+date: 10.03.2020
+
+- [ ] Move 'Related Topics' section to bottom for smaller viewports
+- [ ] When there are no related topics show a small list of most recent topics instead.
+- [ ] Notification Service (e.g. RSS Feed or E-Mail) for new chapters 
+- [ ] Code block linting
+
+- [ ] embed github source code file widget
+- [ ] Embed codepen widget
+- [ ] Optional journal meta property 'background' (image) for fancy topics
+- [ ] Optional 'website' property for chapters (for guest author website)
+- [ ] Gallery support for any number of pictures
+- [ ] Article translations
+- [ ] Links footer
+- [ ] no script directive
+- [ ] Like button for csv tagger
+- [x] side pane with further links ?
+- [x] New chapter hint: Click on it jumps to first unread chapter
+-- [ ] Bug: If you add a new chapter at the beginning or in between it jumps to the last chapter
+- [x] Goldener Schnitt fuer Bilder (600x371) (testen mit cypress ?) @TODO: Write journal chapter
+
+- Bread crumbs or tags ?
+- tl;dr ? Solution: Write as first chapter
+
+- Checkboxes ?
+- Content emphasizing settings for each user ?
+- Write a web application for creating new pages (which creates journal documents) ?
+- Json output for the parser ?
+- improve parser attribute line validation feedback
+
+- [x] Chapter index at the beginning
+- [x] User 'leave feedback' button for each chapter
+- [x] Write topic for csv batch tagger docs
+
+/chapter
+topic: Honorable Mentions
+author: Robin Gruenke
+date: 10.03.2020
+
+- What about node.js ?
+
+---
+Bugs:
+- [x] double line break after chapter properties required. If only one line break, then the first text line
+will be swallowed.

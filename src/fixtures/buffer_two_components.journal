@@ -1,0 +1,17 @@
+/meta
+author: Robin Gruenke
+website: https://www.robingruenke.com
+year: 2020
+title: Journal - Generate Html Tool | robingruenke.com
+description: Generate static html flexible, approachable, consistent and with a custom format
+keywords: html text python generate tool
+topic: How my Journal is build
+prop: value:withcolon
+
+/introduction
+
+For the purpose of starting my blog (I call it journal, because I will write in small chapters and it also serves as documentation),
+I want to generate static html without a server.
+I want a blend of: Clean approach, less boilerplate, simplicity, approachability, content validation,
+plain text, modularity and freedom for customizing.
+

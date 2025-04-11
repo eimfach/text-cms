@@ -1,0 +1,46 @@
+{
+  "topic": "Preface: What about Elm ?",
+  "author": "Robin Gruenke",
+  "date": "2020-03-21",
+  "website": "https://www.robingruenke.com",
+  "appendix": {
+    "href": "https://en.wikipedia.org/wiki/Elm_(programming_language)",
+    "description": "What is Elm ?"
+  },
+  "picture": {
+    "src": "gallery/sample.jpg",
+    "height": "250px"
+  },
+  "interactive_example": "interactive-examples/poll",
+  "gallery": {
+    "height": "75px",
+    "items": [
+      "https://source.unsplash.com/daily?water",
+      "https://source.unsplash.com/daily?river",
+      "https://source.unsplash.com/daily?forest"
+    ]
+  },
+  "quote": {
+    "author": "Wikipedia - The definition of Language",
+    "content": "A language is a structured system of communication. Language, in a broader sense, is the method of communication that involves the use of – particularly human – languages.",
+    "reference": "https://en.wikipedia.org/wiki/Language"
+  },
+  "paragraphs": [
+    {
+      "type": "text",
+      "content": "Because I am a big fan of Elm, my first thought was if it was a good choice for my purpose. I have a little bit experience with elm-static, which is an opinionated tool for creating static html for your website. It supports markdown and elm-markup. However, in my humble opinion it is structural very complex, has a lot of boilerplate and the modularity of the markdown files is somehow hard to see through."
+    },
+    {
+      "type": "text",
+      "content": "What about elm-markup ?"
+    },
+    {
+      "type": "code",
+      "content": "  module Test exposing (..)\n  import Html exposing (Html, div, h1, text)\n\n  main : Html Never\n  main =\n      div [] [ h1 [] [ text \"Hello World !\" ]  ]\n"
+    },
+    {
+      "type": "text",
+      "content": "Finally, I was thinking: What would be the elm way of doing it ?"
+    }
+  ]
+}
